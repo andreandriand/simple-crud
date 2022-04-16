@@ -1,6 +1,17 @@
 <?php
-
+session_start();
 $conn = mysqli_connect("localhost", "root", "", "utspaw");
+
+function query($query)
+{
+  global $conn;
+  $result = mysqli_query($conn, $query);
+  $datas = [];
+  while ($data = mysqli_fetch_assoc($result)) {
+    $datas[] = $data;
+  }
+  return $datas;
+}
 
 // Register user
 if (isset($_POST['register'])) {
@@ -22,13 +33,65 @@ if (isset($_POST['login'])) {
   $username = $_POST['username'];
   $password = $_POST['password'];
   $login = mysqli_query($conn, "SELECT * FROM user WHERE username = '$username' AND password = '$password'");
+  $data_user = mysqli_fetch_assoc($login);
   $cek = mysqli_num_rows($login);
   if ($cek > 0) {
-    $_SESSION['username'] = $username;
+    $_SESSION['username'] = $data_user['id_user'];
     $_SESSION['status'] = "login";
   } else {
     echo "<script>alert('Username atau Password Salah')</script>";
     echo "<script>location='index.php'</script>";
+  }
+}
+
+// Input Data
+
+if (isset($_POST['submit'])) {
+  if (!isset($_SESSION['username'])) {
+    echo "<script>alert('Anda Harus Login Terlebih Dahulu')</script>";
+    echo "<script>location='index.php'</script>";
+  } else {
+    $id = $_SESSION['username'];
+    $satuan_palu = query("SELECT harga_satuan FROM alat WHERE id_alat = 'PAL'")[0];
+    $satuan_obeng = query("SELECT harga_satuan FROM alat WHERE id_alat = 'OBG'")[0];
+    $satuan_sekop = query("SELECT harga_satuan FROM alat WHERE id_alat = 'SKP'")[0];
+    $satuan_semen = query("SELECT harga_satuan FROM bahan WHERE id_bahan = 'SMN'")[0];
+    $satuan_bata = query("SELECT harga_satuan FROM bahan WHERE id_bahan = 'BBT'")[0];
+    $satuan_kayu = query("SELECT harga_satuan FROM bahan WHERE id_bahan = 'KYU'")[0];
+    $harga_satuan_palu = intval($satuan_palu['harga_satuan']);
+    $harga_satuan_obeng = intval($satuan_obeng['harga_satuan']);
+    $harga_satuan_sekop = intval($satuan_sekop['harga_satuan']);
+    $harga_satuan_semen = intval($satuan_semen['harga_satuan']);
+    $harga_satuan_bata = intval($satuan_bata['harga_satuan']);
+    $harga_satuan_kayu = intval($satuan_kayu['harga_satuan']);
+
+    $semen = $_POST['semen'];
+    $harga_semen = $semen * $harga_satuan_semen;
+
+    $bata = $_POST['bata'];
+    $harga_bata = $bata * $harga_satuan_bata;
+
+    $kayu = $_POST['kayu'];
+    $harga_kayu = $kayu *  $harga_satuan_kayu;
+
+    $palu = $_POST['palu'];
+    $harga_palu = $palu * $harga_satuan_palu;
+
+    $obeng = $_POST['obeng'];
+    $harga_obeng = $obeng * $harga_satuan_obeng;
+
+    $sekop = $_POST['sekop'];
+    $harga_sekop = $sekop * $harga_satuan_sekop;
+
+    $harga_total = $harga_semen + $harga_bata + $harga_kayu + $harga_palu + $harga_obeng + $harga_sekop;
+    $insert = mysqli_query($conn, "INSERT INTO history VALUES ('', $id, '$semen', '$bata', '$kayu', '$palu', '$obeng', '$sekop', '$harga_total')");
+    if ($insert) {
+      echo "<script>alert('Data Berhasil Diinput')</script>";
+      echo "<script>location='index.php'</script>";
+    } else {
+      echo "<script>alert('Data Gagal Diinput')</script>";
+      echo "<script>location='index.php'</script>";
+    }
   }
 }
 
@@ -105,78 +168,78 @@ if (isset($_POST['login'])) {
           <h2>Let's Build Your Future Palace</h2>
         </div>
       </div>
-      <form method="POST" action=""></form>
-      <div class="row mt-5">
-        <div class="col">
-          <p class="mt-5">Choose Your Material</p>
-          <table cellpadding="10">
-            <tr>
-              <td>
-                <label for="semen">Semen </label>
-              </td>
-              <td> : </td>
-              <td>
-                <input id="semen" type="number" name="semen" />
-              </td>
-            </tr>
-            <tr>
-              <td>
-                <label for="bata">Batu Bata </label>
-              </td>
-              <td> : </td>
-              <td>
-                <input id="bata" type="number" name="bata" />
-              </td>
-            </tr>
-            <tr>
-              <td>
-                <label for="kayu">Kayu </label>
-              </td>
-              <td> : </td>
-              <td>
-                <input id="kayu" type="number" name="kayu" />
-              </td>
-            </tr>
-          </table>
+      <form method="POST" action="">
+        <div class="row mt-5">
+          <div class="col">
+            <p class="mt-5">Choose Your Material</p>
+            <table cellpadding="10">
+              <tr>
+                <td>
+                  <label for="semen">Semen </label>
+                </td>
+                <td> : </td>
+                <td>
+                  <input id="semen" type="number" name="semen" />
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  <label for="bata">Batu Bata </label>
+                </td>
+                <td> : </td>
+                <td>
+                  <input id="bata" type="number" name="bata" />
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  <label for="kayu">Kayu </label>
+                </td>
+                <td> : </td>
+                <td>
+                  <input id="kayu" type="number" name="kayu" />
+                </td>
+              </tr>
+            </table>
+          </div>
+          <div class="col">
+            <p class="mt-5">Choose Your Tools</p>
+            <table class="ms-3" cellpadding="10">
+              <tr>
+                <td>
+                  <label for="palu">Palu </label>
+                </td>
+                <td> : </td>
+                <td>
+                  <input id="palu" type="number" name="palu" />
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  <label for="sekop">Sekop </label>
+                </td>
+                <td> : </td>
+                <td>
+                  <input id="sekop" type="number" name="sekop" />
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  <label for="obeng">Obeng </label>
+                </td>
+                <td> : </td>
+                <td>
+                  <input id="obeng" type="number" name="obeng" />
+                </td>
+              </tr>
+            </table>
+          </div>
         </div>
-        <div class="col">
-          <p class="mt-5">Choose Your Tools</p>
-          <table class="ms-3" cellpadding="10">
-            <tr>
-              <td>
-                <label for="palu">Palu </label>
-              </td>
-              <td> : </td>
-              <td>
-                <input id="palu" type="number" name="palu" />
-              </td>
-            </tr>
-            <tr>
-              <td>
-                <label for="sekop">Sekop </label>
-              </td>
-              <td> : </td>
-              <td>
-                <input id="sekop" type="number" name="sekop" />
-              </td>
-            </tr>
-            <tr>
-              <td>
-                <label for="obeng">Obeng </label>
-              </td>
-              <td> : </td>
-              <td>
-                <input id="obeng" type="number" name="obeng" />
-              </td>
-            </tr>
-          </table>
+        <div class="row mt-5 pb-5">
+          <div class="col">
+            <button type="submit" name="submit" class="btn btn-success">Done</button>
+          </div>
         </div>
-      </div>
-      <div class="row mt-5 pb-5">
-        <div class="col">
-          <button type="submit" name="submit" class="btn btn-success">Done</button>
-        </div>
-      </div>
       </form>
     </div>
   </section>
