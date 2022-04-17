@@ -1,17 +1,6 @@
 <?php
 session_start();
-$conn = mysqli_connect("localhost", "root", "", "utspaw");
-
-function query($query)
-{
-  global $conn;
-  $result = mysqli_query($conn, $query);
-  $datas = [];
-  while ($data = mysqli_fetch_assoc($result)) {
-    $datas[] = $data;
-  }
-  return $datas;
-}
+require 'functions.php';
 
 // Register user
 if (isset($_POST['register'])) {

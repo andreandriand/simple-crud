@@ -1,19 +1,8 @@
 <?php
 
-$conn = mysqli_connect('localhost', 'root', '', 'utspaw');
+require 'functions.php';
 
 $id = $_GET['id'];
-
-function query($query)
-{
-    global $conn;
-    $result = mysqli_query($conn, $query);
-    $datas = [];
-    while ($data = mysqli_fetch_assoc($result)) {
-        $datas[] = $data;
-    }
-    return $datas;
-}
 
 $data = query("SELECT * FROM history WHERE id_user = $id");
 
@@ -55,7 +44,7 @@ $data = query("SELECT * FROM history WHERE id_user = $id");
 
     <!-- history -->
 
-    <section id="history" class="text-center bg-purple">
+    <section id="history" class="text-center bg-purple pb-5">
         <div class="container">
             <div class="row">
                 <div class="col pt-5">
@@ -111,6 +100,12 @@ $data = query("SELECT * FROM history WHERE id_user = $id");
     </section>
 
     <!-- End history -->
+
+    <!-- Footer -->
+
+    <footer id="footer" class="bg-footer text-light text-center p-2">Created by Andre &copy; 2022</footer>
+
+    <!-- End Footer -->
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p" crossorigin="anonymous"></script>
 
