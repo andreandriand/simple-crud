@@ -125,7 +125,8 @@ if (isset($_POST['submit'])) {
           <?php
 
           if (isset($_SESSION['username'])) {
-            echo '<a class="nav-item nav-link" href="index.php">History</a>';
+            $id = $_SESSION['username'];
+            echo '<a class="nav-item nav-link" href="history.php?id=' . $id . '" >History</a>';
             echo '<a class="nav-item nav-link" href="logout.php">Logout</a>';
           } else {
             echo '<button type="button" class="nav-link btn" data-bs-toggle="modal" data-bs-target="#login">
